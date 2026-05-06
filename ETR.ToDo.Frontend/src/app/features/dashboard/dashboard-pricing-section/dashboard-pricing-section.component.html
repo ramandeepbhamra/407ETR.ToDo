@@ -1,0 +1,73 @@
+<section id="pricing" class="pricing-section">
+  <div class="container">
+    <header class="section-header">
+      <h2>Plans &amp; Features</h2>
+      <p class="subtitle">Start free. Upgrade when you need more.</p>
+    </header>
+    <div class="pricing-cards-wrapper">
+
+      @if (!isAuthenticated()) {
+        <div class="pricing-card">
+          <mat-card>
+            <mat-card-header>
+              <mat-card-title>Basic</mat-card-title>
+              <mat-card-subtitle>
+                <div class="price-container">
+                  <span class="price">Free</span>
+                  <span class="period">register with email</span>
+                </div>
+              </mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="features-list">
+                <div class="feature-item"><mat-icon color="primary">check_circle</mat-icon><span>Free account — register with email</span></div>
+                <div class="feature-item"><mat-icon color="primary">check_circle</mat-icon><span>Up to 10 active tasks</span></div>
+                <div class="feature-item"><mat-icon color="primary">check_circle</mat-icon><span>Multiple task lists</span></div>
+                <div class="feature-item"><mat-icon color="primary">check_circle</mat-icon><span>JWT-secured account</span></div>
+                <div class="feature-item"><mat-icon color="primary">check_circle</mat-icon><span>Profile management</span></div>
+                <div class="feature-item"><mat-icon color="primary">star</mat-icon><span>Request Premium after registering</span></div>
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <div class="flex justify-center w-full">
+                <a mat-stroked-button class="buy-button" (click)="authDialogService.openRegister()">Register for free</a>
+              </div>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      }
+
+      @if (isAuthenticated()) {
+        <div class="pricing-card">
+          <mat-card>
+            <div class="popular-badge">Best Value</div>
+            <mat-card-header>
+              <mat-card-title>Premium</mat-card-title>
+              <mat-card-subtitle>
+                <div class="price-container">
+                  <span class="price">Contact us</span>
+                  <span class="period">for upgrade</span>
+                </div>
+              </mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+              <div class="features-list">
+                <div class="feature-item"><mat-icon color="primary">check_circle</mat-icon><span>Everything in Basic</span></div>
+                <div class="feature-item"><mat-icon color="primary">check_circle</mat-icon><span>Unlimited tasks</span></div>
+                <div class="feature-item"><mat-icon color="primary">check_circle</mat-icon><span>Priority access to new features</span></div>
+                <div class="feature-item"><mat-icon color="primary">check_circle</mat-icon><span>Premium-only features</span></div>
+                <div class="feature-item"><mat-icon color="primary">check_circle</mat-icon><span>Dedicated support</span></div>
+              </div>
+            </mat-card-content>
+            <mat-card-actions>
+              <div class="flex justify-center w-full">
+                <a mat-flat-button class="buy-button" href="mailto:support@functionhealth.com">Get Premium</a>
+              </div>
+            </mat-card-actions>
+          </mat-card>
+        </div>
+      }
+
+    </div>
+  </div>
+</section>

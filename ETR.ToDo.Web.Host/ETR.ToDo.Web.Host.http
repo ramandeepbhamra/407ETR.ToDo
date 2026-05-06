@@ -1,0 +1,6 @@
+@ETR.ToDo.Web.Host_HostAddress = https://localhost:44387
+
+GET {{ETR.ToDo.Web.Host_HostAddress}}/weatherforecast
+Accept: application/json
+
+###

@@ -1,0 +1,26 @@
+<div mat-dialog-title class="flex items-center gap-2">
+  <mat-icon class="text-amber-500">timer</mat-icon>
+  <span>Session expiring</span>
+</div>
+
+<mat-dialog-content>
+  <p class="text-sm opacity-70 mb-4">
+    You have been inactive. Your session will expire in
+  </p>
+  <div class="flex items-center justify-center my-4">
+    <div class="relative flex items-center justify-center w-20 h-20">
+      <mat-progress-spinner
+        mode="determinate"
+        [value]="countdown() / data.totalSeconds * 100"
+        diameter="80"
+        strokeWidth="6" />
+      <span class="absolute text-2xl font-bold text-[var(--primary)]">{{ countdown() }}</span>
+    </div>
+  </div>
+  <p class="text-sm opacity-70 text-center">seconds. Do you want to stay logged in?</p>
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex justify-end gap-2">
+  <button mat-button (click)="dialogRef.close(false)">Sign out</button>
+  <button mat-flat-button (click)="stayLoggedIn()">Stay logged in</button>
+</mat-dialog-actions>

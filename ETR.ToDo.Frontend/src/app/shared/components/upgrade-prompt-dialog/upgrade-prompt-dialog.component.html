@@ -1,0 +1,20 @@
+<div mat-dialog-title class="flex items-center gap-2">
+  <mat-icon class="text-yellow-600">upgrade</mat-icon>
+  <span>{{ data.title }}</span>
+</div>
+
+<mat-dialog-content>
+  <p class="text-base mb-4">{{ data.message }}</p>
+  <div class="bg-blue-50 border border-blue-200 rounded px-4 py-3 text-sm text-blue-800">
+    <mat-icon class="!text-[18px] !w-[18px] !h-[18px] mr-2 align-middle">info</mat-icon>
+    Upgrade to <strong>Premium</strong> for unlimited access to all features.
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex justify-end gap-2">
+  <button mat-button (click)="close()">Cancel</button>
+  <button mat-flat-button color="primary" (click)="contactSupport()">
+    <mat-icon class="mr-1">email</mat-icon>
+    Upgrade
+  </button>
+</mat-dialog-actions>

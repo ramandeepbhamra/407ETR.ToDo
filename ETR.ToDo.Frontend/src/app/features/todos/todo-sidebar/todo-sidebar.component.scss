@@ -1,0 +1,27 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+:host ::ng-deep {
+  .mat-mdc-list-item {
+    margin-top: 4px;
+    margin-bottom: 4px;
+  }
+
+  .group .mdc-list-item__content {
+    padding-right: 68px;
+  }
+
+  .active-link {
+    background-color: rgba(var(--primary-rgb, 63, 81, 181), 0.12) !important;
+    color: var(--primary) !important;
+    font-weight: 500 !important;
+
+    .mat-list-item-icon {
+      color: var(--primary) !important;
+    }
+  }
+
+}

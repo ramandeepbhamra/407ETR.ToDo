@@ -1,0 +1,13 @@
+<h2 class="text-lg font-medium mb-4" style="color: var(--primary)">Favourites</h2>
+
+@if (tasks().length === 0) {
+  <p>No favourited tasks yet. Star a task to see it here.</p>
+} @else {
+  @for (task of tasks(); track task.id) {
+    <app-todo-item
+      [task]="task"
+      (taskUpdated)="onTaskUpdated($event)"
+      (taskDeleted)="onTaskDeleted($event)"
+    />
+  }
+}

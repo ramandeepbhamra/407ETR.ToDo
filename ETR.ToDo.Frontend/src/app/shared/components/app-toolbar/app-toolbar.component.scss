@@ -1,0 +1,7 @@
+:host {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  --mat-icon-button-icon-color: var(--primary-light);
+  width: 100%;
+}

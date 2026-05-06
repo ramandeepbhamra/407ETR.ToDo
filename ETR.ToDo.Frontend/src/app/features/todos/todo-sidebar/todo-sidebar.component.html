@@ -1,0 +1,54 @@
+<mat-nav-list>
+  <a
+    mat-list-item
+    routerLink="/todos/favourites"
+    routerLinkActive="active-link"
+    class="mb-0"
+  >
+    <mat-icon matListItemIcon class="text-orange-500">star</mat-icon>
+    <span matListItemTitle>Favourites</span>
+  </a>
+
+  <mat-divider class="my-0" />
+
+  @for (list of taskLists(); track list.id) {
+    <div class="group relative">
+      <a
+        mat-list-item
+        [routerLink]="['/todos/list', list.id]"
+        routerLinkActive="active-link"
+        [matTooltip]="list.title"
+        matTooltipPosition="right"
+      >
+        <mat-icon matListItemIcon>list</mat-icon>
+        <span matListItemTitle>{{ list.title }}</span>
+      </a>
+      <div class="absolute top-1/2 -translate-y-1/2 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex z-10">
+        <button
+          mat-icon-button
+          class="!w-8 !h-8 text-gray-600 hover:!text-blue-500"
+          (click)="openListDialog($event, list)"
+          matTooltip="Rename list"
+        >
+          <mat-icon class="!text-[18px]">edit</mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          class="!w-8 !h-8 text-gray-600 hover:!text-red-500"
+          (click)="confirmDelete($event, list)"
+          matTooltip="Delete list"
+        >
+          <mat-icon class="!text-[18px]">delete</mat-icon>
+        </button>
+      </div>
+    </div>
+  }
+
+  <mat-divider class="my-0" />
+
+  <mat-list-item (click)="openListDialog()" style="cursor:pointer">
+    <mat-icon matListItemIcon>add</mat-icon>
+    <span matListItemTitle>New list</span>
+  </mat-list-item>
+
+</mat-nav-list>

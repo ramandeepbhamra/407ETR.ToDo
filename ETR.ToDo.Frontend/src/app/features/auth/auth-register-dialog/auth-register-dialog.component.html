@@ -1,0 +1,101 @@
+<div mat-dialog-title class="flex items-center gap-2">
+  <mat-icon class="text-[var(--primary)]">check_circle</mat-icon>
+  <span>Create account</span>
+</div>
+
+<mat-dialog-content>
+  <p class="text-sm opacity-60 mb-4">Fill in your details to get started</p>
+
+  <form [formGroup]="form" id="registerForm" (ngSubmit)="submit()" class="flex flex-col gap-4 pt-1 w-full">
+
+    <div class="flex gap-4">
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>First name</mat-label>
+        <input matInput trimOnBlur formControlName="firstName" maxlength="100" autocomplete="given-name" />
+        @if (form.controls.firstName.errors?.['required'] && form.controls.firstName.touched) {
+          <mat-error>First name is required</mat-error>
+        } @else if (form.controls.firstName.errors?.['maxlength'] && form.controls.firstName.touched) {
+          <mat-error>Max 100 characters</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="flex-1">
+        <mat-label>Last name</mat-label>
+        <input matInput trimOnBlur formControlName="lastName" maxlength="100" autocomplete="family-name" />
+        @if (form.controls.lastName.errors?.['required'] && form.controls.lastName.touched) {
+          <mat-error>Last name is required</mat-error>
+        } @else if (form.controls.lastName.errors?.['maxlength'] && form.controls.lastName.touched) {
+          <mat-error>Max 100 characters</mat-error>
+        }
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput trimOnBlur type="email" formControlName="email" maxlength="256" autocomplete="email" />
+      <mat-icon matSuffix>email</mat-icon>
+      @if (form.controls.email.errors?.['required'] && form.controls.email.touched) {
+        <mat-error>Email is required</mat-error>
+      } @else if (form.controls.email.errors?.['email'] && form.controls.email.touched) {
+        <mat-error>Enter a valid email address</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      <input matInput [type]="showPassword() ? 'text' : 'password'"
+             formControlName="password" autocomplete="new-password" />
+      <button mat-icon-button matSuffix type="button" (click)="showPassword.set(!showPassword())">
+        <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      @if (form.controls.password.errors?.['required'] && form.controls.password.touched) {
+        <mat-error>Password is required</mat-error>
+      } @else if (form.controls.password.errors?.['minlength'] && form.controls.password.touched) {
+        <mat-error>Password must be at least 6 characters</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Confirm password</mat-label>
+      <input matInput [type]="showConfirmPassword() ? 'text' : 'password'"
+             formControlName="confirmPassword" autocomplete="new-password"
+             [errorStateMatcher]="confirmPasswordMatcher" />
+      <button mat-icon-button matSuffix type="button" (click)="showConfirmPassword.set(!showConfirmPassword())">
+        <mat-icon>{{ showConfirmPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      @if (form.controls.confirmPassword.errors?.['required'] && form.controls.confirmPassword.touched) {
+        <mat-error>Please confirm your password</mat-error>
+      } @else if (form.errors?.['passwordMismatch'] && form.controls.confirmPassword.touched) {
+        <mat-error>Passwords do not match</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Phone (optional)</mat-label>
+      <input matInput formControlName="phoneNumber"
+             mask="(000)-000-0000" [showMaskTyped]="true" autocomplete="tel" />
+      <mat-icon matSuffix>phone</mat-icon>
+    </mat-form-field>
+
+    @if (errorMessage()) {
+      <div class="flex items-center gap-2 text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2 text-sm">
+        <mat-icon class="!text-[18px] !w-[18px] !h-[18px]">error_outline</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex flex-col items-stretch gap-1">
+  <div class="text-sm opacity-60">
+    Already have an account?
+    <button mat-button type="button" (click)="switchToLogin()">Sign in</button>
+  </div>
+  <div class="flex justify-end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-flat-button type="submit" form="registerForm" [disabled]="isLoading()">
+      @if (isLoading()) { <mat-spinner diameter="18" /> } @else { Create account }
+    </button>
+  </div>
+</mat-dialog-actions>

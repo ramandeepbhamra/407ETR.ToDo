@@ -1,0 +1,17 @@
+<div mat-dialog-title class="flex items-center gap-2">
+  <mat-icon class="text-red-500">cloud_off</mat-icon>
+  <span>Services unavailable</span>
+</div>
+
+<mat-dialog-content>
+  <p class="text-sm opacity-70 mt-2">
+    The backend services are not responding. Please make sure the API server is running, then refresh the page.
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex justify-end">
+  <button mat-flat-button (click)="refresh()">
+    <mat-icon>refresh</mat-icon>
+    Refresh
+  </button>
+</mat-dialog-actions>

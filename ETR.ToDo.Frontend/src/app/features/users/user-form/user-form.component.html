@@ -1,0 +1,116 @@
+<div class="form-container">
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>{{ pageTitle() }}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (isLoading()) {
+        <div class="spinner-wrap"><mat-spinner diameter="40" /></div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="submit()" class="user-form">
+
+          <div class="name-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>First name</mat-label>
+              <input matInput trimOnBlur formControlName="firstName" maxlength="100" autocomplete="given-name" />
+              @if (form.controls.firstName.errors?.['required'] && form.controls.firstName.touched) {
+                <mat-error>First name is required</mat-error>
+              } @else if (form.controls.firstName.errors?.['maxlength'] && form.controls.firstName.touched) {
+                <mat-error>Max 100 characters</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Last name</mat-label>
+              <input matInput trimOnBlur formControlName="lastName" maxlength="100" autocomplete="family-name" />
+              @if (form.controls.lastName.errors?.['required'] && form.controls.lastName.touched) {
+                <mat-error>Last name is required</mat-error>
+              } @else if (form.controls.lastName.errors?.['maxlength'] && form.controls.lastName.touched) {
+                <mat-error>Max 100 characters</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput trimOnBlur type="email" formControlName="email" maxlength="256" autocomplete="email" />
+            <mat-icon matSuffix>email</mat-icon>
+            @if (form.controls.email.errors?.['required'] && form.controls.email.touched) {
+              <mat-error>Email is required</mat-error>
+            } @else if (form.controls.email.errors?.['email'] && form.controls.email.touched) {
+              <mat-error>Enter a valid email address</mat-error>
+            } @else if (form.controls.email.errors?.['maxlength'] && form.controls.email.touched) {
+              <mat-error>Max 256 characters</mat-error>
+            }
+          </mat-form-field>
+
+          @if (!isEditMode()) {
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Password</mat-label>
+              <input matInput [type]="showPassword() ? 'text' : 'password'" [formControl]="passwordControl" maxlength="100" autocomplete="new-password" />
+              <button mat-icon-button matSuffix type="button" (click)="showPassword.set(!showPassword())">
+                <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (passwordControl.errors?.['required'] && passwordControl.touched) {
+                <mat-error>Password is required</mat-error>
+              } @else if (passwordControl.errors?.['minlength'] && passwordControl.touched) {
+                <mat-error>Password must be at least 6 characters</mat-error>
+              } @else if (passwordControl.errors?.['maxlength'] && passwordControl.touched) {
+                <mat-error>Max 100 characters</mat-error>
+              }
+            </mat-form-field>
+          }
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Phone (optional)</mat-label>
+            <input matInput formControlName="phoneNumber" mask="(000)-000-0000" [showMaskTyped]="true" autocomplete="tel" />
+            <mat-icon matSuffix>phone</mat-icon>
+            @if (form.controls.phoneNumber.errors?.['maxlength'] && form.controls.phoneNumber.touched) {
+              <mat-error>Max 14 characters</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role">
+              <mat-option [value]="null" disabled>Please select</mat-option>
+              @for (r of roles; track r) {
+                <mat-option [value]="r">{{ r }}</mat-option>
+              }
+            </mat-select>
+            @if (isSystemUser()) {
+              <mat-hint>Role cannot be changed for system users</mat-hint>
+            }
+            @if (form.controls.role.errors?.['required'] && form.controls.role.touched) {
+              <mat-error>Role is required</mat-error>
+            }
+          </mat-form-field>
+
+          @if (isEditMode()) {
+            <mat-checkbox formControlName="isActive">Active</mat-checkbox>
+          }
+
+          @if (errorMessage()) {
+            <div class="error-banner">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
+
+          <div class="form-actions">
+            <button mat-button type="button" (click)="cancel()">Cancel</button>
+            <button mat-flat-button type="submit" [disabled]="isSaving()">
+              @if (isSaving()) {
+                <mat-spinner diameter="20" />
+              } @else {
+                {{ isEditMode() ? 'Save changes' : 'Create user' }}
+              }
+            </button>
+          </div>
+
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

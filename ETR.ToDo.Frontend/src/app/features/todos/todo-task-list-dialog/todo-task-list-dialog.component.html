@@ -1,0 +1,36 @@
+<div mat-dialog-title class="flex items-center gap-2">
+  <mat-icon>list</mat-icon>
+  <span>{{ isEditMode ? 'Rename list' : 'New list' }}</span>
+</div>
+
+<mat-dialog-content>
+  <form id="listForm" (ngSubmit)="submit()" class="flex flex-col pt-2">
+    <mat-form-field
+      appearance="outline"
+      [color]="titleError() ? 'warn' : undefined"
+      [class.shake]="titleError()"
+    >
+      <mat-label>List name</mat-label>
+      <input
+        matInput
+        trimOnBlur
+        [value]="title()"
+        (input)="title.set($any($event.target).value)"
+        maxlength="100"
+        autofocus
+      />
+      <mat-icon matSuffix>edit</mat-icon>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex justify-end gap-1">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-flat-button type="submit" form="listForm" [disabled]="isSubmitting()">
+    @if (isSubmitting()) {
+      <mat-spinner diameter="18" />
+    } @else {
+      {{ isEditMode ? 'Save' : 'Add' }}
+    }
+  </button>
+</mat-dialog-actions>

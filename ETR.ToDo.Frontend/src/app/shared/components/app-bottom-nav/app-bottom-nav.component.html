@@ -1,0 +1,29 @@
+@if (isAuthenticated() && responsiveService.smallWidth()) {
+  <nav class="bottom-nav">
+    <a class="nav-item" routerLink="/todos" routerLinkActive="active" matRipple>
+      <mat-icon>check_circle</mat-icon>
+      <span>Todos</span>
+    </a>
+
+    @if (isAdmin()) {
+      <a class="nav-item" routerLink="/users" routerLinkActive="active" matRipple>
+        <mat-icon>group</mat-icon>
+        <span>Users</span>
+      </a>
+    }
+
+    @if (isDevUser()) {
+      <a class="nav-item" routerLink="/dev-tools" routerLinkActive="active" matRipple>
+        <mat-icon>build</mat-icon>
+        <span>Dev Tools</span>
+      </a>
+    }
+
+    @if (isAdminOrDev()) {
+      <a class="nav-item" routerLink="/logs" routerLinkActive="active" matRipple>
+        <mat-icon>receipt_long</mat-icon>
+        <span>Logs</span>
+      </a>
+    }
+  </nav>
+}

@@ -1,0 +1,98 @@
+<div class="flex flex-col gap-4 overflow-x-hidden">
+  <app-todo-form [listId]="listId()" (taskAdded)="onTaskAdded($event)" />
+
+  <!-- Filters -->
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <div class="flex items-center gap-2 font-medium"><mat-icon>filter_list</mat-icon>Filters</div>
+      </mat-panel-title>
+      <mat-panel-description>Search and filter tasks</mat-panel-description>
+    </mat-expansion-panel-header>
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 py-2">
+      <mat-form-field appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput trimOnBlur [ngModel]="searchText()" (ngModelChange)="searchText.set($event)" placeholder="Search tasks...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <div class="flex items-center pb-1">
+        <mat-slide-toggle [checked]="showFavouritesOnly()" (change)="showFavouritesOnly.set($event.checked)">
+          Favourites only
+        </mat-slide-toggle>
+      </div>
+    </div>
+    <mat-action-row>
+      <button mat-button (click)="clearFilters()"><mat-icon>clear</mat-icon> Clear</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <!-- Tabs -->
+  <mat-tab-group [selectedIndex]="selectedTabIndex()" (selectedIndexChange)="selectedTabIndex.set($event)">
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="mr-2">pending_actions</mat-icon>
+        In Progress ({{ filteredActiveTasks().length }})
+      </ng-template>
+      <div class="py-4">
+        @if (filteredActiveTasks().length > 0) {
+          <div 
+            class="task-section"
+            cdkDropList
+            [cdkDropListData]="filteredActiveTasks()"
+            (cdkDropListDropped)="onTaskDrop($event)"
+          >
+            @for (task of filteredActiveTasks(); track task.id) {
+              <div cdkDrag class="group">
+                <div class="drag-placeholder" *cdkDragPlaceholder></div>
+                <div class="flex items-center gap-2">
+                  <mat-icon 
+                    cdkDragHandle 
+                    class="drag-handle opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-move text-gray-400 hover:!text-gray-600"
+                  >
+                    drag_indicator
+                  </mat-icon>
+                  <app-todo-item
+                    class="flex-1"
+                    [task]="task"
+                    (taskUpdated)="onTaskUpdated($event)"
+                    (taskDeleted)="onTaskDeleted($event)"
+                  />
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="empty-state py-8 text-center text-gray-500">
+            <mat-icon class="!text-[48px] !w-12 !h-12 mx-auto mb-2 opacity-50">inbox</mat-icon>
+            <p>No active tasks found.</p>
+          </div>
+        }
+      </div>
+    </mat-tab>
+
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon class="mr-2">check_circle</mat-icon>
+        Completed ({{ filteredCompletedTasks().length }})
+      </ng-template>
+      <div class="py-4">
+        @if (filteredCompletedTasks().length > 0) {
+          <div class="task-section">
+            @for (task of filteredCompletedTasks(); track task.id) {
+              <app-todo-item
+                [task]="task"
+                (taskUpdated)="onTaskUpdated($event)"
+                (taskDeleted)="onTaskDeleted($event)"
+              />
+            }
+          </div>
+        } @else {
+          <div class="empty-state py-8 text-center text-gray-500">
+            <mat-icon class="!text-[48px] !w-12 !h-12 mx-auto mb-2 opacity-50">check_circle</mat-icon>
+            <p>No completed tasks found.</p>
+          </div>
+        }
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

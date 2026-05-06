@@ -1,0 +1,132 @@
+<div class="p-6 max-w-[1400px] mx-auto flex flex-col gap-4">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <mat-icon class="text-[var(--primary)] !text-[28px] !w-7 !h-7">people</mat-icon>
+      <h1 class="m-0 text-2xl font-medium text-[var(--primary-dark)]">Users</h1>
+    </div>
+    <button mat-flat-button (click)="openDialog(null)">
+      <mat-icon>add</mat-icon> Add user
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <div class="flex items-center gap-2 font-medium"><mat-icon>filter_list</mat-icon>Filters</div>
+      </mat-panel-title>
+      <mat-panel-description>Narrow results by name, email, role or status</mat-panel-description>
+    </mat-expansion-panel-header>
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 py-2 items-center">
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput trimOnBlur [ngModel]="filterName()" (ngModelChange)="filterName.set($event)" placeholder="First or last name">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput trimOnBlur [ngModel]="filterEmail()" (ngModelChange)="filterEmail.set($event)" placeholder="e.g. user@mail.com">
+        <mat-icon matSuffix>email</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Role</mat-label>
+        <mat-select [value]="filterRole()" (valueChange)="filterRole.set($event)">
+          <mat-option [value]="null">All</mat-option>
+          @for (r of roles; track r) {
+            <mat-option [value]="r">{{ r }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+      <div class="flex items-center pb-1">
+        <mat-slide-toggle [checked]="filterIsActive() === true" (change)="filterIsActive.set($event.checked ? true : null)">Active only</mat-slide-toggle>
+      </div>
+      <div class="flex items-center pb-1">
+        <mat-slide-toggle [checked]="filterIsSystemUser() === true" (change)="filterIsSystemUser.set($event.checked ? true : null)">System only</mat-slide-toggle>
+      </div>
+    </div>
+    <mat-action-row>
+      <button mat-button (click)="clearFilters()"><mat-icon>clear</mat-icon> Clear</button>
+      <button mat-flat-button (click)="applyFilters()"><mat-icon>search</mat-icon> Apply</button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <!-- Table -->
+  <div class="relative rounded overflow-hidden mat-elevation-z2">
+    @if (isLoading()) {
+      <div class="absolute inset-0 flex items-center justify-center bg-white/70 z-10"><mat-spinner diameter="40" /></div>
+    }
+    <table mat-table [dataSource]="users()" matSort matSortActive="firstName" matSortDirection="asc" (matSortChange)="onSortChange($event)" class="w-full">
+      <ng-container matColumnDef="firstName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="firstName">First name</th>
+        <td mat-cell *matCellDef="let u">{{ u.firstName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="lastName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="lastName">Last name</th>
+        <td mat-cell *matCellDef="let u">{{ u.lastName }}</td>
+      </ng-container>
+      <ng-container matColumnDef="email">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="email">Email</th>
+        <td mat-cell *matCellDef="let u">
+          <div class="flex items-center gap-1.5">
+            <span>{{ u.email }}</span>
+            @if (u.isSystemUser) {
+              <mat-icon class="!text-[16px] !w-4 !h-4 text-[var(--primary)] opacity-70 cursor-default"
+                        matTooltip="System user — role cannot be changed"
+                        matTooltipPosition="right">
+                shield
+              </mat-icon>
+            }
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="phone">
+        <th mat-header-cell *matHeaderCellDef>Phone</th>
+        <td mat-cell *matCellDef="let u" class="text-sm opacity-75">{{ u.phoneNumber ?? "---" }}</td>
+      </ng-container>
+      <ng-container matColumnDef="role">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="role">Role</th>
+        <td mat-cell *matCellDef="let u">
+          <span class="badge"
+            [class.bg-blue-50]="u.role === UserRole.Basic" [class.text-blue-800]="u.role === UserRole.Basic" [class.border-blue-200]="u.role === UserRole.Basic"
+            [class.bg-emerald-50]="u.role === UserRole.Premium" [class.text-emerald-800]="u.role === UserRole.Premium" [class.border-emerald-200]="u.role === UserRole.Premium"
+            [class.bg-red-50]="u.role === UserRole.Admin" [class.text-red-800]="u.role === UserRole.Admin" [class.border-red-200]="u.role === UserRole.Admin"
+            [class.bg-purple-50]="u.role === UserRole.Dev" [class.text-purple-800]="u.role === UserRole.Dev" [class.border-purple-200]="u.role === UserRole.Dev">
+            {{ u.role }}
+          </span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="isActive">Active</th>
+        <td mat-cell *matCellDef="let u">
+          @if (u.isActive) {
+            <span class="badge bg-green-50 text-green-800 border-green-200">Active</span>
+          } @else {
+            <span class="badge bg-gray-50 text-gray-600 border-gray-200">Inactive</span>
+          }
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let u" class="w-10 text-right">
+          <button mat-icon-button (click)="openDialog(u.id)" matTooltip="Edit"><mat-icon>edit</mat-icon></button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell !py-10 !px-4" [attr.colspan]="displayedColumns.length">
+          @if (!isLoading()) {
+            <div class="flex flex-col items-center gap-2 text-[var(--primary-dark)] opacity-50">
+              <mat-icon class="!text-[40px] !w-10 !h-10">people_outline</mat-icon>
+              <span>No users found</span>
+            </div>
+          }
+        </td>
+      </tr>
+    </table>
+    <mat-paginator [length]="totalCount()" [pageSize]="pageSize()" [pageIndex]="pageIndex()"
+      [pageSizeOptions]="pageSizeOptions" (page)="onPageChange($event)" showFirstLastButtons />
+  </div>
+</div>

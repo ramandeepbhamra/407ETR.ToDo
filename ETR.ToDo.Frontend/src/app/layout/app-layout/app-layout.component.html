@@ -1,0 +1,15 @@
+<app-navigation />
+<app-bottom-nav />
+<mat-sidenav-container>
+  <mat-sidenav
+    [opened]="themeSelectorService.isOpen()"
+    (closed)="themeSelectorService.close()"
+    position="end"
+    fixedInViewport="true"
+    fixedTopGap="64"
+    class="theme-selector"
+  >
+    <app-theme-selector />
+  </mat-sidenav>
+  <router-outlet />
+</mat-sidenav-container>

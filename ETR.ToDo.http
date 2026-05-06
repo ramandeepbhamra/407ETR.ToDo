@@ -1,0 +1,433 @@
+###############################################################################
+# ETR.ToDo API - HTTP Request Collection
+#
+# Works with Visual Studio 2022+, VS Code (REST Client extension), and Rider.
+#
+# SETUP:
+# 1. Start backend: dotnet run --project ETR.ToDo.Web.Host
+#    Use the Kestrel http profile → http://localhost:5214
+# 2. Run requests sequentially — login first to get auth token
+# 3. VS 2022 auto-captures named responses for use in subsequent requests
+#
+# TIP: Click "Send Request" above each ### block to execute it.
+###############################################################################
+
+@baseUrl = http://localhost:5214
+@contentType = application/json
+
+###############################################################################
+# 1. HEALTH & CONFIG
+###############################################################################
+
+### Health Check (No Auth Required)
+# @name health
+GET {{baseUrl}}/health
+
+###
+
+### Get Public Configuration (No Auth Required)
+# Returns session timeout settings consumed by the Angular frontend
+# @name config
+GET {{baseUrl}}/api/config
+
+###
+
+###############################################################################
+# 2. AUTHENTICATION
+###############################################################################
+
+### Login - Admin User
+# @name loginAdmin
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "ETR.admin1@yopmail.com",
+  "password": "123qwe"
+}
+
+###
+
+### Login - Basic User
+# @name loginBasic
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "ETR.basic1@yopmail.com",
+  "password": "123qwe"
+}
+
+###
+
+### Login - Dev User
+# @name loginDev
+POST {{baseUrl}}/api/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "ETR.dev1@yopmail.com",
+  "password": "123qwe"
+}
+
+###
+
+### Register New User (Self-Registration — No Auth Required)
+# @name register
+POST {{baseUrl}}/api/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "newuser@example.com",
+  "password": "NewUser123!",
+  "firstName": "New",
+  "lastName": "User",
+  "phoneNumber": "+1-555-0123",
+  "role": 1
+}
+
+###
+
+### Refresh Token (No Auth Required)
+# @name refresh
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": "{{loginAdmin.response.body.token.refreshToken}}"
+}
+
+###
+
+### Revoke Refresh Token — Logout (Requires Auth)
+POST {{baseUrl}}/api/auth/revoke
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "refreshToken": "{{loginAdmin.response.body.token.refreshToken}}"
+}
+
+###
+
+###############################################################################
+# 3. PROFILE (Authenticated User's Own Profile)
+###############################################################################
+
+### Get Current User Profile
+GET {{baseUrl}}/api/profile
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+### Update Current User Profile
+# Only FirstName, LastName, PhoneNumber — role changes go through /api/users
+PUT {{baseUrl}}/api/profile
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "firstName": "Updated",
+  "lastName": "Name",
+  "phoneNumber": "+1-555-9999"
+}
+
+###
+
+###############################################################################
+# 4. USER MANAGEMENT (Admin Only)
+###############################################################################
+
+### Get All Users (Paginated)
+GET {{baseUrl}}/api/users?pageNumber=1&pageSize=10
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+### Get All Users — Filter by Name
+GET {{baseUrl}}/api/users?filter=John&pageNumber=1&pageSize=10
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+### Get All Users — Filter by Role (1=Basic, 2=Admin, 3=Dev)
+GET {{baseUrl}}/api/users?role=2&pageNumber=1&pageSize=10
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+### Get All Users — Active Only, Exclude System Users
+GET {{baseUrl}}/api/users?isActive=true&isSystemUser=false&pageNumber=1&pageSize=20
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+### Get User by ID
+GET {{baseUrl}}/api/users/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+### Create New User (Admin Only)
+# Role: 1=Basic, 2=Admin, 3=Dev
+# @name createUser
+POST {{baseUrl}}/api/users
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "email": "admin.created@example.com",
+  "password": "SecurePassword123!",
+  "firstName": "Admin",
+  "lastName": "Created",
+  "phoneNumber": "+1-555-1234",
+  "role": 1,
+  "isActive": true
+}
+
+###
+
+### Update User (Admin Only)
+# Role: 1=Basic, 2=Admin, 3=Dev
+PUT {{baseUrl}}/api/users/{{createUser.response.body.data.id}}
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "email": "admin.created@example.com",
+  "firstName": "Updated",
+  "lastName": "User",
+  "phoneNumber": "+1-555-5678",
+  "role": 1,
+  "isActive": true
+}
+
+###
+
+### Delete User — Soft Delete (Admin Only)
+DELETE {{baseUrl}}/api/users/{{createUser.response.body.data.id}}
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+###############################################################################
+# 5. TASK LISTS
+###############################################################################
+
+### Get All Task Lists for Current User
+GET {{baseUrl}}/api/tasklists
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+
+###
+
+### Create Task List
+# @name createTaskList
+POST {{baseUrl}}/api/tasklists
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Work Tasks"
+}
+
+###
+
+### Update Task List
+PUT {{baseUrl}}/api/tasklists/{{createTaskList.response.body.data.id}}
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Updated Work Tasks"
+}
+
+###
+
+### Delete Task List — Soft Delete
+DELETE {{baseUrl}}/api/tasklists/{{createTaskList.response.body.data.id}}
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+
+###
+
+###############################################################################
+# 6. TODO TASKS
+###############################################################################
+
+### Get All Tasks in a Task List
+GET {{baseUrl}}/api/tasks?listId={{createTaskList.response.body.data.id}}
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+
+###
+
+### Get Favourite Tasks
+GET {{baseUrl}}/api/tasks/favourites
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+
+###
+
+### Create Todo Task
+# dueDate format: YYYY-MM-DD (DateOnly)
+# @name createTask
+POST {{baseUrl}}/api/tasks
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Complete API documentation",
+  "listId": "{{createTaskList.response.body.data.id}}",
+  "dueDate": "2026-04-30"
+}
+
+###
+
+### Update Todo Task
+PUT {{baseUrl}}/api/tasks/{{createTask.response.body.data.id}}
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Updated Task Title",
+  "listId": "{{createTaskList.response.body.data.id}}",
+  "dueDate": "2026-05-15"
+}
+
+###
+
+### Toggle Task Complete / Incomplete
+PATCH {{baseUrl}}/api/tasks/{{createTask.response.body.data.id}}/complete
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+
+###
+
+### Toggle Task Favourite
+PATCH {{baseUrl}}/api/tasks/{{createTask.response.body.data.id}}/favourite
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+
+###
+
+### Update Task Order (Drag-and-Drop Reorder)
+PUT {{baseUrl}}/api/tasks/update-order
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "listId": "{{createTaskList.response.body.data.id}}",
+  "updates": [
+    { "id": "00000000-0000-0000-0000-000000000001", "order": 1 },
+    { "id": "00000000-0000-0000-0000-000000000002", "order": 2 }
+  ]
+}
+
+###
+
+### Delete Todo Task — Soft Delete
+DELETE {{baseUrl}}/api/tasks/{{createTask.response.body.data.id}}
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+
+###
+
+###############################################################################
+# 7. SUBTASKS
+###############################################################################
+
+### Add Subtask to a Task
+# @name createSubtask
+POST {{baseUrl}}/api/tasks/{{createTask.response.body.data.id}}/subtasks
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Research API best practices"
+}
+
+###
+
+### Update Subtask
+PUT {{baseUrl}}/api/tasks/{{createTask.response.body.data.id}}/subtasks/{{createSubtask.response.body.data.id}}
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+Content-Type: {{contentType}}
+
+{
+  "title": "Updated Subtask Title"
+}
+
+###
+
+### Toggle Subtask Complete / Incomplete
+PATCH {{baseUrl}}/api/tasks/{{createTask.response.body.data.id}}/subtasks/{{createSubtask.response.body.data.id}}/complete
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+
+###
+
+### Delete Subtask — Soft Delete
+DELETE {{baseUrl}}/api/tasks/{{createTask.response.body.data.id}}/subtasks/{{createSubtask.response.body.data.id}}
+Authorization: Bearer {{loginBasic.response.body.token.accessToken}}
+
+###
+
+###############################################################################
+# 8. API LOGS (Admin & Dev Only)
+###############################################################################
+
+### Get API Logs (Paginated)
+GET {{baseUrl}}/api/logs?pageNumber=1&pageSize=20
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+### Get API Logs — Filter by Date Range
+GET {{baseUrl}}/api/logs?startDate=2026-04-01&endDate=2026-04-30&pageNumber=1&pageSize=50
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+### Get API Logs — Filter by Status Code
+GET {{baseUrl}}/api/logs?statusCode=400&pageNumber=1&pageSize=20
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+### Get API Logs — Filter by User Name
+GET {{baseUrl}}/api/logs?userName=ETR.basic1&pageNumber=1&pageSize=20
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+### Get API Logs — Errors Only
+GET {{baseUrl}}/api/logs?hasException=true&pageNumber=1&pageSize=20
+Authorization: Bearer {{loginAdmin.response.body.token.accessToken}}
+
+###
+
+###############################################################################
+# REFERENCE
+###############################################################################
+
+# Roles (enum values):
+#   1 = Basic
+#   2 = Admin
+#   3 = Dev
+
+# Test Users (seeded automatically on first run):
+#   ETR.admin1@yopmail.com  → Admin  (password: 123qwe)
+#   ETR.basic1@yopmail.com  → Basic  (password: 123qwe)
+#   ETR.dev1@yopmail.com    → Dev    (password: 123qwe)
+#   Additional: ETR.admin2-10, ETR.basic2-10, ETR.dev2-10 (40 total)
+
+# Token variable paths:
+#   {{loginAdmin.response.body.token.accessToken}}
+#   {{loginAdmin.response.body.token.refreshToken}}
+#   {{loginAdmin.response.body.user.id}}
+
+# Auto-populated IDs:
+#   {{createTaskList.response.body.data.id}}
+#   {{createTask.response.body.data.id}}
+#   {{createSubtask.response.body.data.id}}
+#   {{createUser.response.body.data.id}}
+
+# Public endpoints (no auth):
+#   GET  /health
+#   GET  /api/config
+#   POST /api/auth/login
+#   POST /api/auth/register
+#   POST /api/auth/refresh

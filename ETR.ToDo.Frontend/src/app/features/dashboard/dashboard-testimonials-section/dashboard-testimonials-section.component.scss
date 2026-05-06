@@ -1,0 +1,5 @@
+.testimonials { background: var(--background); h2 { color: var(--primary); margin-bottom: 48px; font-size: 2rem; } }
+.testimonial-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 300px)); place-content: center; gap: 32px; }
+.testimonial { padding: 24px; border-radius: 8px; background: var(--primary-light); box-shadow: 0 4px 6px rgba(0,0,0,0.1); p { color: var(--primary-dark); font-style: italic; margin-bottom: 16px; line-height: 1.6; } cite { color: var(--primary); font-weight: 500; } }
+section { padding: 64px 0; }
+@media (max-width: 600px) { section { padding: 48px 0; } }

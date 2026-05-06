@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  padding-top: 64px;
+}
+
+:host.mobile {
+  padding-bottom: 56px;
+}
+
+.theme-selector {
+  width: 300px;
+  background: var(--background);
+  --mat-sidenav-container-divider-color: var(--primary-light);
+}

@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.4338480">
+  <PropertyGroup>
+    <StartupCommand>npm start</StartupCommand>
+    <JavaScriptTestFramework>Jasmine</JavaScriptTestFramework>
+    <!-- Allows the build (or compile) script located on package.json to run on Build -->
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+    <!-- Folder where production build objects will be placed -->
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist\ETR.ToDo.Frontend\browser\</BuildOutputFolder>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="src\app\components\**" />
+    <None Remove="src\app\features\auth\auth-login\**" />
+    <None Remove="src\app\features\auth\auth-register\**" />
+    <None Remove="src\app\pages\**" />
+    <None Remove="src\app\services\**" />
+    <TypeScriptConfiguration Remove="src\app\components\**" />
+    <TypeScriptConfiguration Remove="src\app\features\auth\auth-login\**" />
+    <TypeScriptConfiguration Remove="src\app\features\auth\auth-register\**" />
+    <TypeScriptConfiguration Remove="src\app\pages\**" />
+    <TypeScriptConfiguration Remove="src\app\services\**" />
+  </ItemGroup>
+</Project>

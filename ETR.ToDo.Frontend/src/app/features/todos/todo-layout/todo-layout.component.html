@@ -1,0 +1,21 @@
+<mat-drawer-container>
+  <mat-drawer
+    class="sidebar"
+    [opened]="sidenavService.isOpen()"
+    (openedChange)="sidenavService.isOpen.set($event)"
+    [mode]="drawerMode()"
+  >
+    <app-todo-sidebar
+      [taskLists]="taskLists()"
+      (listCreated)="onListCreated($event)"
+      (listDeleted)="onListDeleted($event)"
+      (listRenamed)="onListRenamed($event)"
+    />
+  </mat-drawer>
+
+  <mat-drawer-content [style.margin-left]="contentMargin()">
+    <div class="p-6 max-w-full overflow-x-hidden">
+      <router-outlet />
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

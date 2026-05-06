@@ -1,0 +1,118 @@
+<div mat-dialog-title class="flex items-center gap-2">
+  <span>{{ isEditMode() ? 'Edit user' : 'Add user' }}</span>
+  @if (isEditMode() && isSystemUser()) {
+    <mat-icon class="!text-[18px] !w-[18px] !h-[18px] text-[var(--primary)] opacity-70 cursor-default"
+              matTooltip="System user — role cannot be changed"
+              matTooltipPosition="right">
+      shield
+    </mat-icon>
+  }
+</div>
+
+<mat-dialog-content>
+  @if (isLoading()) {
+    <div class="flex justify-center py-8"><mat-spinner diameter="40" /></div>
+  } @else {
+    <form [formGroup]="form" id="userForm" (ngSubmit)="submit()" class="flex flex-col gap-4 pt-2 min-w-[480px]">
+
+      <div class="flex gap-4">
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>First name</mat-label>
+          <input matInput trimOnBlur formControlName="firstName" maxlength="100" autocomplete="given-name" />
+          @if (form.controls.firstName.errors?.['required'] && form.controls.firstName.touched) {
+            <mat-error>First name is required</mat-error>
+          } @else if (form.controls.firstName.errors?.['maxlength'] && form.controls.firstName.touched) {
+            <mat-error>Max 100 characters</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Last name</mat-label>
+          <input matInput trimOnBlur formControlName="lastName" maxlength="100" autocomplete="family-name" />
+          @if (form.controls.lastName.errors?.['required'] && form.controls.lastName.touched) {
+            <mat-error>Last name is required</mat-error>
+          } @else if (form.controls.lastName.errors?.['maxlength'] && form.controls.lastName.touched) {
+            <mat-error>Max 100 characters</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput trimOnBlur type="email" formControlName="email" maxlength="256" autocomplete="email" />
+        <mat-icon matSuffix>email</mat-icon>
+        @if (form.controls.email.errors?.['required'] && form.controls.email.touched) {
+          <mat-error>Email is required</mat-error>
+        } @else if (form.controls.email.errors?.['email'] && form.controls.email.touched) {
+          <mat-error>Enter a valid email address</mat-error>
+        } @else if (form.controls.email.errors?.['maxlength'] && form.controls.email.touched) {
+          <mat-error>Max 256 characters</mat-error>
+        }
+      </mat-form-field>
+
+      @if (!isEditMode()) {
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput [type]="showPassword() ? 'text' : 'password'"
+                 [formControl]="passwordControl" maxlength="100" autocomplete="new-password" />
+          <button mat-icon-button matSuffix type="button" (click)="showPassword.set(!showPassword())">
+            <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+          </button>
+          @if (passwordControl.errors?.['required'] && passwordControl.touched) {
+            <mat-error>Password is required</mat-error>
+          } @else if (passwordControl.errors?.['minlength'] && passwordControl.touched) {
+            <mat-error>Password must be at least 6 characters</mat-error>
+          }
+        </mat-form-field>
+      }
+
+      <div class="flex gap-4">
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Phone (optional)</mat-label>
+          <input matInput formControlName="phoneNumber"
+                 mask="(000)-000-0000" [showMaskTyped]="true" autocomplete="tel" />
+          <mat-icon matSuffix>phone</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Role</mat-label>
+          <mat-select formControlName="role">
+            <mat-option [value]="null" disabled>Please select</mat-option>
+            @for (r of roles; track r) {
+              <mat-option [value]="r">{{ r }}</mat-option>
+            }
+          </mat-select>
+          @if (isSystemUser()) {
+            <mat-hint>System user — role is locked</mat-hint>
+          }
+          @if (form.controls.role.errors?.['required'] && form.controls.role.touched) {
+            <mat-error>Role is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      @if (isEditMode()) {
+        <mat-checkbox formControlName="isActive">Active</mat-checkbox>
+      }
+
+      @if (errorMessage()) {
+        <div class="flex items-center gap-2 text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2 text-sm">
+          <mat-icon class="!text-[18px] !w-[18px] !h-[18px]">error_outline</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+    </form>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-flat-button type="submit" form="userForm" [disabled]="isSaving()">
+    @if (isSaving()) {
+      <mat-spinner diameter="18" />
+    } @else {
+      {{ isEditMode() ? 'Save changes' : 'Create user' }}
+    }
+  </button>
+</mat-dialog-actions>

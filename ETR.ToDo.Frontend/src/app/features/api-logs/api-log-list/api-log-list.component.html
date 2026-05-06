@@ -1,0 +1,230 @@
+<div class="p-6 max-w-[1400px] mx-auto flex flex-col gap-4">
+
+  <!-- Page Header -->
+  <div class="flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <mat-icon class="text-[var(--primary)] !text-[28px] !w-7 !h-7">api</mat-icon>
+      <h1 class="m-0 text-2xl font-medium text-[var(--primary-dark)]">API Logs</h1>
+    </div>
+    <button mat-icon-button (click)="load()" [disabled]="isLoading()" matTooltip="Refresh">
+      <mat-icon>refresh</mat-icon>
+    </button>
+  </div>
+
+  <!-- Filter Panel -->
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <div class="flex items-center gap-2 font-medium">
+          <mat-icon>filter_list</mat-icon>
+          Filters
+        </div>
+      </mat-panel-title>
+      <mat-panel-description>Narrow results by service, status, date or errors</mat-panel-description>
+    </mat-expansion-panel-header>
+
+    <div class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 py-2 items-center">
+
+      <mat-form-field appearance="outline">
+        <mat-label>Service</mat-label>
+        <input matInput
+               trimOnBlur
+               [ngModel]="filterServiceName()"
+               (ngModelChange)="filterServiceName.set($event)"
+               placeholder="e.g. Users">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Status Code</mat-label>
+        <mat-select [value]="filterStatusCode()" (valueChange)="filterStatusCode.set($event)">
+          <mat-option value="">All</mat-option>
+          <mat-option value="200">200 OK</mat-option>
+          <mat-option value="201">201 Created</mat-option>
+          <mat-option value="204">204 No Content</mat-option>
+          <mat-option value="400">400 Bad Request</mat-option>
+          <mat-option value="401">401 Unauthorized</mat-option>
+          <mat-option value="403">403 Forbidden</mat-option>
+          <mat-option value="404">404 Not Found</mat-option>
+          <mat-option value="422">422 Unprocessable</mat-option>
+          <mat-option value="500">500 Server Error</mat-option>
+          <mat-option value="503">503 Service Unavailable</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>From</mat-label>
+        <input matInput
+               [matDatepicker]="startPicker"
+               [value]="filterStartDate()"
+               (dateChange)="filterStartDate.set($event.value)">
+        <mat-datepicker-toggle matIconSuffix [for]="startPicker" />
+        <mat-datepicker #startPicker />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>To</mat-label>
+        <input matInput
+               [matDatepicker]="endPicker"
+               [value]="filterEndDate()"
+               (dateChange)="filterEndDate.set($event.value)">
+        <mat-datepicker-toggle matIconSuffix [for]="endPicker" />
+        <mat-datepicker #endPicker />
+      </mat-form-field>
+
+      <div class="flex items-center pb-1">
+        <mat-slide-toggle
+          [checked]="filterHasException()"
+          (change)="filterHasException.set($event.checked)">
+          Errors only
+        </mat-slide-toggle>
+      </div>
+
+    </div>
+
+    <mat-action-row>
+      <button mat-button (click)="clearFilters()">
+        <mat-icon>clear</mat-icon> Clear
+      </button>
+      <button mat-flat-button (click)="applyFilters()">
+        <mat-icon>search</mat-icon> Apply
+      </button>
+    </mat-action-row>
+  </mat-expansion-panel>
+
+  <!-- Table -->
+  <div class="relative rounded overflow-hidden mat-elevation-z2">
+
+    @if (isLoading()) {
+      <div class="absolute inset-0 flex items-center justify-center bg-white/70 z-10">
+        <mat-spinner diameter="40" />
+      </div>
+    }
+
+    <table mat-table
+           [dataSource]="logs()"
+           matSort
+           matSortActive="executionTime"
+           matSortDirection="desc"
+           (matSortChange)="onSortChange($event)"
+           class="w-full">
+
+      <!-- Execution Time -->
+      <ng-container matColumnDef="executionTime">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Time</th>
+        <td mat-cell *matCellDef="let log"
+            class="whitespace-nowrap text-[0.82rem] text-[var(--primary-dark)]">
+          {{ log.executionTime | date: 'dd MMM yy, HH:mm:ss' }}
+        </td>
+      </ng-container>
+
+      <!-- HTTP Method -->
+      <ng-container matColumnDef="method">
+        <th mat-header-cell *matHeaderCellDef>Method</th>
+        <td mat-cell *matCellDef="let log">
+          @switch (log.httpMethod) {
+            @case ('GET')    { <span class="badge bg-green-50  text-green-800  border-green-200" >GET</span>    }
+            @case ('POST')   { <span class="badge bg-blue-50   text-blue-800   border-blue-200"  >POST</span>   }
+            @case ('PUT')    { <span class="badge bg-orange-50 text-orange-800 border-orange-200">PUT</span>    }
+            @case ('PATCH')  { <span class="badge bg-purple-50 text-purple-800 border-purple-200">PATCH</span>  }
+            @case ('DELETE') { <span class="badge bg-red-50    text-red-800    border-red-200"   >DELETE</span> }
+            @default         { <span class="badge bg-gray-50   text-gray-700   border-gray-200"  >{{ log.httpMethod }}</span> }
+          }
+        </td>
+      </ng-container>
+
+      <!-- Service / Action -->
+      <ng-container matColumnDef="service">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="serviceName">Service</th>
+        <td mat-cell *matCellDef="let log">
+          <span class="font-medium text-[var(--primary-dark)]">{{ log.serviceName }}</span>
+          @if (log.methodName) {
+            <span class="text-[var(--primary-dark)] opacity-60 text-sm"> / {{ log.methodName }}</span>
+          }
+        </td>
+      </ng-container>
+
+      <!-- Status Code -->
+      <ng-container matColumnDef="statusCode">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="statusCode">Status</th>
+        <td mat-cell *matCellDef="let log">
+          @if (log.statusCode >= 500) {
+            <span class="badge bg-red-50    text-red-800    border-red-200"   >{{ log.statusCode }}</span>
+          } @else if (log.statusCode >= 400) {
+            <span class="badge bg-orange-50 text-orange-800 border-orange-200">{{ log.statusCode }}</span>
+          } @else if (log.statusCode >= 300) {
+            <span class="badge bg-blue-50   text-blue-800   border-blue-200"  >{{ log.statusCode }}</span>
+          } @else {
+            <span class="badge bg-green-50  text-green-800  border-green-200" >{{ log.statusCode }}</span>
+          }
+        </td>
+      </ng-container>
+
+      <!-- Duration -->
+      <ng-container matColumnDef="duration">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="executionDuration">Duration</th>
+        <td mat-cell *matCellDef="let log" class="tabular-nums">
+          {{ log.executionDuration }}<span class="text-xs opacity-60 ml-px">ms</span>
+        </td>
+      </ng-container>
+
+      <!-- User -->
+      <ng-container matColumnDef="user">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header="userName">User</th>
+        <td mat-cell *matCellDef="let log" class="text-[var(--primary-dark)] opacity-75 text-sm">
+          {{ log.userName ?? '—' }}
+        </td>
+      </ng-container>
+
+      <!-- IP Address -->
+      <ng-container matColumnDef="ip">
+        <th mat-header-cell *matHeaderCellDef>IP</th>
+        <td mat-cell *matCellDef="let log" class="text-[var(--primary-dark)] opacity-75 text-sm">
+          {{ log.clientIpAddress ?? '—' }}
+        </td>
+      </ng-container>
+
+      <!-- Exception -->
+      <ng-container matColumnDef="exception">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let log" class="w-10 text-center">
+          @if (log.exceptionMessage) {
+            <mat-icon class="text-[#e65100] cursor-help align-middle"
+                      [matTooltip]="log.exceptionMessage"
+                      matTooltipClass="exception-tooltip"
+                      matTooltipPosition="left">
+              warning
+            </mat-icon>
+          }
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell !py-10 !px-4" [attr.colspan]="displayedColumns.length">
+          @if (!isLoading()) {
+            <div class="flex flex-col items-center gap-2 text-[var(--primary-dark)] opacity-50">
+              <mat-icon class="!text-[40px] !w-10 !h-10">inbox</mat-icon>
+              <span>No log entries found</span>
+            </div>
+          }
+        </td>
+      </tr>
+
+    </table>
+
+    <mat-paginator
+      [length]="totalCount()"
+      [pageSize]="pageSize()"
+      [pageIndex]="pageIndex()"
+      [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)"
+      showFirstLastButtons
+      aria-label="Select page of logs">
+    </mat-paginator>
+
+  </div>
+
+</div>

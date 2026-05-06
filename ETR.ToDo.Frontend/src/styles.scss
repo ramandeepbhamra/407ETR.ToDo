@@ -1,0 +1,93 @@
+@use "@angular/material" as mat;
+@use "./easy-theming.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  @include mat.theme(
+    (
+      color: mat.$azure-palette,
+      typography: Roboto,
+    )
+  );
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+}
+
+.flex-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.mdc-notched-outline__notch {
+  border-right: none;
+}
+
+.mat-mdc-icon-button {
+  line-height: normal;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding-left: 24px;
+  padding-right: 24px;
+  text-align: center;
+}
+
+// Reusable badge base — colour variants applied via Tailwind in templates
+.badge {
+  @apply inline-block px-2 py-0.5 rounded text-xs font-semibold border whitespace-nowrap;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-6px); }
+  30%       { transform: translateX(6px); }
+  45%       { transform: translateX(-4px); }
+  60%       { transform: translateX(4px); }
+  75%       { transform: translateX(-2px); }
+  90%       { transform: translateX(2px); }
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+// Material tooltip panel override — global scope reaches overlay, no ::ng-deep needed
+.exception-tooltip {
+  font-size: 0.78rem;
+  max-width: 400px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-6px); }
+  30%       { transform: translateX(6px); }
+  45%       { transform: translateX(-4px); }
+  60%       { transform: translateX(4px); }
+  75%       { transform: translateX(-2px); }
+  90%       { transform: translateX(2px); }
+}
+
+.field-error .mdc-notched-outline__leading,
+.field-error .mdc-notched-outline__notch,
+.field-error .mdc-notched-outline__trailing {
+  border-color: var(--mat-sys-error) !important;
+  border-width: 2px !important;
+}
+
+.field-error {
+  animation: shake 0.5s ease-in-out;
+}

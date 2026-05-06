@@ -1,0 +1,20 @@
+<Solution>
+  <Project Path="ETR.ToDo.Core.EF/ETR.ToDo.Core.EF.csproj" />
+  <Project Path="ETR.ToDo.Core.Shared/ETR.ToDo.Core.Shared.csproj" />
+  <Project Path="ETR.ToDo.Core/ETR.ToDo.Core.csproj" />
+  <Project Path="ETR.ToDo.Frontend/ETR.ToDo.Frontend.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+  <Project Path="ETR.ToDo.Services.Core/ETR.ToDo.Services.Core.csproj" Id="237ab9ed-eb8b-4795-bd8c-fa6d984ce9c0" />
+  <Project Path="ETR.ToDo.Services/ETR.ToDo.Services.csproj" Id="67ef460b-14de-47ae-9747-5cfcb8ba1a06" />
+  <Project Path="ETR.ToDo.Tests.Api.BDD/ETR.ToDo.Tests.Api.BDD.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
+  <Project Path="ETR.ToDo.Tests.Playwright/ETR.ToDo.Tests.Playwright.csproj">
+    <Build Solution="Debug|*" Project="false" />
+  </Project>
+  <Project Path="ETR.ToDo.Tests/ETR.ToDo.Tests.csproj" />
+  <Project Path="ETR.ToDo.Web.Core/ETR.ToDo.Web.Core.csproj" Id="5d1b9789-b60d-40fd-9a7c-5885fcd199ca" />
+  <Project Path="ETR.ToDo.Web.Host/ETR.ToDo.Web.Host.csproj" />
+</Solution>

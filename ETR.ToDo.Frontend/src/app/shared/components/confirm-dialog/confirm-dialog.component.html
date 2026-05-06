@@ -1,0 +1,15 @@
+<div mat-dialog-title class="flex items-center gap-2">
+  <mat-icon class="text-red-600">warning</mat-icon>
+  <span>{{ data.title }}</span>
+</div>
+
+<mat-dialog-content>
+  <p class="text-base">{{ data.message }}</p>
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex justify-end gap-2">
+  <button mat-button (click)="cancel()">{{ data.cancelText || 'Cancel' }}</button>
+  <button mat-flat-button color="warn" (click)="confirm()">
+    {{ data.confirmText || 'Delete' }}
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,70 @@
+<div mat-dialog-title class="flex items-center justify-between">
+  <div class="flex items-center gap-2">
+    <mat-icon class="text-[var(--primary)]">account_circle</mat-icon>
+    <span>My Profile</span>
+  </div>
+  @if (userRole()) {
+    <span class="role-badge" [attr.data-role]="userRole()">{{ userRole() }}</span>
+  }
+</div>
+
+<mat-dialog-content>
+  @if (isLoading()) {
+    <div class="flex justify-center py-8"><mat-spinner diameter="40" /></div>
+  } @else {
+    <p class="text-sm opacity-60 mb-4">Update your personal details</p>
+
+    <form [formGroup]="form" id="profileForm" (ngSubmit)="submit()" class="flex flex-col gap-4 pt-1 w-full min-w-[420px]">
+
+      <div class="flex gap-4">
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>First name</mat-label>
+          <input matInput trimOnBlur formControlName="firstName" maxlength="100" autocomplete="given-name" />
+          @if (form.controls.firstName.errors?.['required'] && form.controls.firstName.touched) {
+            <mat-error>First name is required</mat-error>
+          } @else if (form.controls.firstName.errors?.['maxlength'] && form.controls.firstName.touched) {
+            <mat-error>Max 100 characters</mat-error>
+          } @else if (form.controls.firstName.errors?.['noWhitespace'] && form.controls.firstName.touched) {
+            <mat-error>First name cannot be blank</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="flex-1">
+          <mat-label>Last name</mat-label>
+          <input matInput trimOnBlur formControlName="lastName" maxlength="100" autocomplete="family-name" />
+          @if (form.controls.lastName.errors?.['required'] && form.controls.lastName.touched) {
+            <mat-error>Last name is required</mat-error>
+          } @else if (form.controls.lastName.errors?.['maxlength'] && form.controls.lastName.touched) {
+            <mat-error>Max 100 characters</mat-error>
+          } @else if (form.controls.lastName.errors?.['noWhitespace'] && form.controls.lastName.touched) {
+            <mat-error>Last name cannot be blank</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Phone (optional)</mat-label>
+        <input matInput formControlName="phoneNumber"
+               mask="(000)-000-0000" [showMaskTyped]="true" autocomplete="tel" />
+        <mat-icon matSuffix>phone</mat-icon>
+      </mat-form-field>
+
+      @if (errorMessage()) {
+        <div class="flex items-center gap-2 text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2 text-sm">
+          <mat-icon class="!text-[18px] !w-[18px] !h-[18px]">error_outline</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+    </form>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex flex-col items-stretch gap-1">
+  <div class="flex justify-end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-flat-button type="submit" form="profileForm" [disabled]="isSaving() || isLoading()">
+      @if (isSaving()) { <mat-spinner diameter="18" /> } @else { Save }
+    </button>
+  </div>
+</mat-dialog-actions>

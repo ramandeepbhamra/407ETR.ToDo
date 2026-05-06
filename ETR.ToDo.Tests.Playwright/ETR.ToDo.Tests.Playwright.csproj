@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <!-- Prevent .NET build since this is a Node.js project -->
+    <EnableDefaultItems>false</EnableDefaultItems>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Include all TypeScript and config files in the project -->
+    <None Include="**\*.ts" />
+    <None Include="**\*.json" />
+    <None Include="**\*.md" />
+    <None Include=".gitignore" />
+  </ItemGroup>
+
+  <Target Name="NpmInstall" BeforeTargets="Build">
+    <Message Importance="high" Text="Installing npm dependencies for Playwright tests..." />
+    <Exec Command="npm install" WorkingDirectory="$(ProjectDir)" />
+  </Target>
+
+  <Target Name="PlaywrightInstall" AfterTargets="NpmInstall">
+    <Message Importance="high" Text="Installing Playwright browsers..." />
+    <Exec Command="npx playwright install chromium" WorkingDirectory="$(ProjectDir)" />
+  </Target>
+
+  <Target Name="RunPlaywrightTests" AfterTargets="Build">
+    <Message Importance="high" Text="Running Playwright E2E tests..." />
+    <Exec Command="npm test" WorkingDirectory="$(ProjectDir)" ContinueOnError="true" />
+  </Target>
+
+</Project>

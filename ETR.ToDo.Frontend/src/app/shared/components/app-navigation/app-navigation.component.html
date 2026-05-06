@@ -1,0 +1,54 @@
+<mat-toolbar class="nav-bar">
+  <div class="container nav-container">
+    @if (isAuthenticated() && responsiveService.smallWidth()) {
+      <button mat-icon-button (click)="sidenavService.toggle()" matTooltip="Toggle menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+    }
+
+    <a routerLink="/" class="logo">
+      <mat-icon>check_circle</mat-icon>
+      <span>407 ETR ToDo</span>
+    </a>
+
+    @if (isAuthenticated()) {
+      @if (!responsiveService.smallWidth()) {
+        <nav>
+          <a mat-button routerLink="/todos">Todos</a>
+          @if (isAdmin()) {
+            <a mat-button routerLink="/users">Users</a>
+          }
+          @if (isDevUser()) {
+            <a mat-button routerLink="/dev-tools">Dev Tools</a>
+          }
+          @if (isAdmin() || isDevUser()) {
+            <a mat-button routerLink="/logs">API Logs</a>
+          }
+        </nav>
+      }
+
+      <div class="nav-user">
+        @if (!responsiveService.smallWidth()) {
+          <button mat-button class="user-name-btn" (click)="openProfile()" matTooltip="Edit profile">
+            <mat-icon>account_circle</mat-icon>
+            <span class="user-name">{{ currentUser()?.fullName }}</span>
+            @if (currentUser()?.role) {
+              <span class="role-badge" [attr.data-role]="currentUser()?.role">{{ currentUser()?.role }}</span>
+            }
+          </button>
+        }
+        <button mat-icon-button (click)="openTheme()" title="Theme">
+          <mat-icon>palette</mat-icon>
+        </button>
+        <button mat-icon-button (click)="logout()" title="Sign out">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </div>
+    } @else {
+      <div class="nav-user">
+        <a mat-button id="main-nav-sign-in" (click)="authDialogService.openLogin()">Sign in</a>
+        <a mat-flat-button (click)="authDialogService.openRegister()">Register</a>
+      </div>
+    }
+  </div>
+</mat-toolbar>

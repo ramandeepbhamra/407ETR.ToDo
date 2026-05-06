@@ -1,0 +1,45 @@
+:host {
+  mat-dialog-content {
+    overflow-y: auto;
+    max-height: 60vh;
+  }
+
+  [mat-dialog-title] {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .role-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+
+    &[data-role="Admin"] {
+      background-color: #fee;
+      color: #c00;
+    }
+
+    &[data-role="Premium"] {
+      background-color: #fef3c7;
+      color: #92400e;
+    }
+
+    &[data-role="Basic"] {
+      background-color: #e0e7ff;
+      color: #3730a3;
+    }
+
+    &[data-role="Dev"] {
+      background-color: #d1fae5;
+      color: #065f46;
+    }
+  }
+}

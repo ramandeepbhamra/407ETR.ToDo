@@ -1,0 +1,48 @@
+{
+  "name": "407etr-todo-app",
+  "version": "2.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "vitest",
+    "test:coverage": "vitest --coverage",
+    "test:watch": "vitest --watch",
+    "test:ui": "vitest --ui"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^21.2.8",
+    "@angular/cdk": "^21.2.6",
+    "@angular/common": "^21.2.8",
+    "@angular/compiler": "^21.2.8",
+    "@angular/core": "^21.2.8",
+    "@angular/forms": "^21.2.8",
+    "@angular/material": "^21.2.6",
+    "@angular/platform-browser": "^21.2.8",
+    "@angular/platform-browser-dynamic": "^21.2.8",
+    "@angular/router": "^21.2.8",
+    "@angular/youtube-player": "^20.2.14",
+    "@ng-idle/core": "^16.0.0",
+    "@ng-idle/keepalive": "^16.0.0",
+    "ngx-mask": "^21.0.1",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@analogjs/vite-plugin-angular": "^2.4.8",
+    "@angular/build": "^21.2.7",
+    "@angular/cli": "^21.2.7",
+    "@angular/compiler-cli": "^21.2.8",
+    "@types/node": "^25.6.0",
+    "@vitest/coverage-v8": "^4.1.4",
+    "autoprefixer": "^10.4.20",
+    "jsdom": "^29.0.2",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.9.0",
+    "vitest": "^4.1.4"
+  }
+}

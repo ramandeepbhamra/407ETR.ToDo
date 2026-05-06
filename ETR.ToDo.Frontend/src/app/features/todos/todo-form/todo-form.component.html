@@ -1,0 +1,31 @@
+<div class="form-row">
+  <mat-form-field appearance="outline" style="flex:1; margin-bottom:-1.25em" [color]="titleError() ? 'warn' : undefined" [class.shake]="titleError()">
+    <mat-label>Add a task</mat-label>
+    <input
+      matInput
+      trimOnBlur
+      #taskInput
+      [value]="title()"
+      (input)="title.set($any($event.target).value)"
+      (keyup.enter)="submit()"
+      [disabled]="isSubmitting()"
+      maxlength="255"
+    />
+    <mat-icon matSuffix>add_task</mat-icon>
+  </mat-form-field>
+  <mat-form-field appearance="outline" style="width: 160px; margin-bottom:-1.25em">
+    <mat-label>Due Date</mat-label>
+    <input
+      matInput
+      [matDatepicker]="picker"
+      [(ngModel)]="dueDate"
+      placeholder="MM/DD/YYYY"
+      [disabled]="isSubmitting()"
+    >
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+  <button mat-flat-button (click)="submit()" [disabled]="isSubmitting() || !title().trim()">
+    Add
+  </button>
+</div>

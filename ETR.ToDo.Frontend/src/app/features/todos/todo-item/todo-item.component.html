@@ -1,0 +1,189 @@
+<div class="task-row group relative" [class.bg-red-50]="isDueDateOverdue && !task().isCompleted" [class.editing]="isEditing()">
+  <mat-checkbox
+    [checked]="task().isCompleted"
+    (change)="toggleComplete()"
+  />
+
+  @if (!isEditing()) {
+    <div class="flex items-center gap-2 flex-shrink-0">
+      @if (task().isFavourite) {
+        <mat-icon class="text-orange-500 !text-[18px] !w-[18px] !h-[18px] flex-shrink-0">star</mat-icon>
+      }
+    </div>
+    <span
+      class="task-title min-w-0"
+      [class.completed]="task().isCompleted"
+      [matTooltip]="task().title"
+      matTooltipShowDelay="800"
+      (dblclick)="!task().isCompleted && startEdit()"
+    >
+      {{ task().title }}
+    </span>
+
+    @if (task().dueDate) {
+      <div class="flex items-center gap-1 flex-shrink-0">
+        <mat-icon
+          class="!text-[18px] !w-[18px] !h-[18px] flex-shrink-0"
+          [class.text-red-600]="isDueDateOverdue && !task().isCompleted"
+          [class.invisible]="!isDueDateOverdue || task().isCompleted"
+        >warning</mat-icon>
+        <span class="due-date text-sm whitespace-nowrap" [class.overdue]="isDueDateOverdue && !task().isCompleted">
+          📅 {{ formatDueDate(task().dueDate) }}
+        </span>
+      </div>
+    }
+  } @else {
+    <div class="edit-container" [class.edit-container--mobile]="responsiveService.smallWidth()">
+      <div class="edit-fields" [class.edit-fields--mobile]="responsiveService.smallWidth()">
+        <mat-form-field appearance="outline" class="edit-title-field" [color]="titleError() ? 'warn' : undefined" [class.shake]="titleError()">
+          <mat-label>Task title</mat-label>
+          <input
+            matInput
+            trimOnBlur
+            [value]="editTitle()"
+            (input)="editTitle.set($any($event.target).value)"
+            (keyup.enter)="saveEdit()"
+            (keyup.escape)="cancelEdit()"
+            maxlength="255"
+            autofocus
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="edit-date-field">
+          <mat-label>Due Date</mat-label>
+          <input
+            matInput
+            [matDatepicker]="picker"
+            [(ngModel)]="editDueDate"
+            placeholder="MM/DD/YYYY"
+          >
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="edit-actions">
+        <button mat-icon-button (click)="saveEdit()"><mat-icon>check</mat-icon></button>
+        <button mat-icon-button (click)="cancelEdit()"><mat-icon>close</mat-icon></button>
+      </div>
+    </div>
+  }
+
+  <!-- Action buttons (show on hover, hide during edit) -->
+  @if (!isEditing()) {
+    <div class="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1 bg-inherit">
+      @if (!task().isCompleted) {
+        <button
+          mat-icon-button
+          class="text-gray-600 hover:!text-blue-500"
+          (click)="startEdit()"
+          matTooltip="Edit task"
+        >
+          <mat-icon>edit</mat-icon>
+        </button>
+      }
+
+      <button
+        mat-icon-button
+        [class]="task().isFavourite ? 'text-orange-500 hover:!text-orange-600' : 'text-gray-600 hover:!text-orange-500'"
+        (click)="toggleFavourite()"
+        [matTooltip]="task().isFavourite ? 'Remove from favourites' : 'Add to favourites'"
+      >
+        <mat-icon>{{ task().isFavourite ? 'star' : 'star_border' }}</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
+        class="text-gray-600 hover:!text-blue-500"
+        (click)="showSubTasks.set(!showSubTasks())"
+        [matTooltip]="showSubTasks() ? 'Hide subtasks' : 'Show subtasks'"
+      >
+        <mat-icon>{{ showSubTasks() ? 'expand_less' : 'chevron_right' }}</mat-icon>
+      </button>
+
+      <button
+        mat-icon-button
+        class="text-gray-600 hover:!text-red-500"
+        (click)="confirmDelete()"
+        matTooltip="Delete task"
+      >
+        <mat-icon>delete_outline</mat-icon>
+      </button>
+    </div>
+  }
+</div>
+
+@if (showSubTasks()) {
+  <div class="subtasks">
+    @for (sub of task().subTasks; track sub.id; let idx = $index) {
+      <div class="subtask-row group relative">
+        <mat-checkbox
+          [checked]="sub.isCompleted"
+          (change)="toggleSubTaskComplete(sub.id)"
+        />
+
+        @if (editingSubTaskId() !== sub.id) {
+          <span
+            class="subtask-title"
+            [class.completed]="sub.isCompleted"
+            [matTooltip]="sub.title"
+            matTooltipShowDelay="800"
+            (dblclick)="!sub.isCompleted && startEditSubTask(sub.id, sub.title)"
+          >
+            {{ sub.title }}
+          </span>
+          <div class="absolute right-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex gap-1">
+            @if (!sub.isCompleted) {
+              <button
+                mat-icon-button
+                class="!w-8 !h-8 text-gray-600 hover:!text-blue-500"
+                (click)="startEditSubTask(sub.id, sub.title)"
+                matTooltip="Edit subtask"
+              >
+                <mat-icon class="!text-[16px]">edit</mat-icon>
+              </button>
+            }
+            <button
+              mat-icon-button
+              class="!w-8 !h-8 text-gray-600"
+              (click)="confirmDeleteSubTask(sub.id, sub.title)"
+              matTooltip="Delete subtask"
+            >
+              <mat-icon class="!text-[16px]">delete_outline</mat-icon>
+            </button>
+          </div>
+        } @else {
+          <mat-form-field appearance="outline" style="flex:1; margin-bottom:-1.25em" [color]="subtaskEditError() ? 'warn' : undefined" [class.shake]="subtaskEditError()">
+            <input
+              matInput
+              trimOnBlur
+              [value]="editSubTaskTitle()"
+              (input)="editSubTaskTitle.set($any($event.target).value)"
+              (keyup.enter)="saveSubTaskEdit(sub.id)"
+              (keyup.escape)="cancelSubTaskEdit()"
+              maxlength="255"
+              autofocus
+            />
+          </mat-form-field>
+          <button mat-icon-button (click)="saveSubTaskEdit(sub.id)"><mat-icon>check</mat-icon></button>
+          <button mat-icon-button (click)="cancelSubTaskEdit()"><mat-icon>close</mat-icon></button>
+        }
+      </div>
+    }
+
+    <div class="flex items-center gap-2" style="margin-top:4px">
+      <mat-form-field appearance="outline" class="flex-1" style="margin-bottom:-1.25em" [color]="newSubtaskError() ? 'warn' : undefined" [class.shake]="newSubtaskError()">
+        <mat-label>Add subtask</mat-label>
+        <input
+          matInput
+          trimOnBlur
+          [value]="newSubTaskTitle()"
+          (input)="newSubTaskTitle.set($any($event.target).value)"
+          (keyup.enter)="addSubTask()"
+          maxlength="255"
+        />
+      </mat-form-field>
+      <button mat-flat-button (click)="addSubTask()" [disabled]="!newSubTaskTitle().trim()">
+        Add
+      </button>
+    </div>
+  </div>
+}

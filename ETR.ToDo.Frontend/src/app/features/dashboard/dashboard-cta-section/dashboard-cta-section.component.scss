@@ -1,0 +1,4 @@
+.cta { background: linear-gradient(to top, var(--background), var(--primary-light)); h2 { color: var(--primary); font-size: 2rem; margin-bottom: 24px; } p { color: var(--primary-dark); margin-bottom: 32px; font-size: 1.2rem; } }
+.actions { display: flex; gap: 16px; justify-content: center; align-items: center; a { min-width: 120px; display: flex; align-items: center; gap: 8px; mat-icon { font-size: 18px; height: 18px; width: 18px; } } }
+section { padding: 64px 0; }
+@media (max-width: 600px) { .actions { flex-direction: column; width: 100%; a { width: 100%; justify-content: center; } } section { padding: 48px 0; } }

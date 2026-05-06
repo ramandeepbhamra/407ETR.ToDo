@@ -1,0 +1,9 @@
+mat-drawer-container {
+  height: calc(100vh - 64px);
+}
+
+.sidebar {
+  width: 220px;
+  background: var(--background);
+  --mat-sidenav-container-divider-color: var(--primary-light);
+}

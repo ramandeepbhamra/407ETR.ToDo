@@ -1,0 +1,55 @@
+<div mat-dialog-title class="flex items-center gap-2">
+  <mat-icon class="text-[var(--primary)]">check_circle</mat-icon>
+  <span>Sign in</span>
+</div>
+
+<mat-dialog-content>
+  <p class="text-sm opacity-60 mb-4">Enter your credentials to continue</p>
+
+  <form [formGroup]="form" id="loginForm" (ngSubmit)="submit()" class="flex flex-col gap-4 pt-1 w-full">
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput trimOnBlur type="email" formControlName="email" autocomplete="email" />
+      <mat-icon matSuffix>email</mat-icon>
+      @if (form.controls.email.errors?.['required'] && form.controls.email.touched) {
+        <mat-error>Email is required</mat-error>
+      } @else if (form.controls.email.errors?.['email'] && form.controls.email.touched) {
+        <mat-error>Enter a valid email address</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      <input matInput [type]="showPassword() ? 'text' : 'password'"
+             formControlName="password" autocomplete="current-password" />
+      <button mat-icon-button matSuffix type="button" (click)="showPassword.set(!showPassword())">
+        <mat-icon>{{ showPassword() ? 'visibility_off' : 'visibility' }}</mat-icon>
+      </button>
+      @if (form.controls.password.errors?.['required'] && form.controls.password.touched) {
+        <mat-error>Password is required</mat-error>
+      }
+    </mat-form-field>
+
+    @if (errorMessage()) {
+      <div class="flex items-center gap-2 text-red-700 bg-red-50 border border-red-200 rounded px-3 py-2 text-sm">
+        <mat-icon class="!text-[18px] !w-[18px] !h-[18px]">error_outline</mat-icon>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions class="flex flex-col items-stretch gap-1">
+  <div class="text-sm opacity-60">
+    Don't have an account?
+    <button mat-button type="button" (click)="switchToRegister()">Create one</button>
+  </div>
+  <div class="flex justify-end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-flat-button type="submit" form="loginForm" [disabled]="isLoading()">
+      @if (isLoading()) { <mat-spinner diameter="18" /> } @else { Sign in }
+    </button>
+  </div>
+</mat-dialog-actions>
