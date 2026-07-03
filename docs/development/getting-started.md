@@ -14,21 +14,13 @@
 
 ## Backend Setup
 
-### 1. Configure Development Settings (First Time Only)
+### 1. Configure Development Settings (Optional)
 
-The project uses `appsettings.Development.json` for local configuration. This file is **gitignored** to protect secrets.
-
-**Setup steps:**
-```bash
-cd ETR.ToDo.Web.Host
-cp appsettings.Development.json.example appsettings.Development.json
-```
-
-Then edit `appsettings.Development.json` and add your credentials:
+If you need Jira/Xray integration for test management, edit `ETR.ToDo.Web.Host/appsettings.Development.json` and add your credentials:
 - **Jira:** Get API token from https://id.atlassian.com/manage-profile/security/api-tokens
 - **Xray:** Get Client ID/Secret from Xray Cloud API settings
 
-> **Note:** If you don't need Jira/Xray integration, you can leave the placeholder values as-is. They're only required if you're working with test management features.
+> **Note:** This is optional. The app runs fine with placeholder values. Only configure if working with Jira/Xray test management.
 
 For detailed setup instructions, see [docs/xray/setup-guide.md](../xray/setup-guide.md).
 
