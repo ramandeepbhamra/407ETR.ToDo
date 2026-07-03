@@ -1,0 +1,22 @@
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Data Source=../ETRToDo.db"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "Microsoft.EntityFrameworkCore.Database.Command": "Information"
+    }
+  },
+  "Jira": {
+    "BaseUrl": "https://your-site.atlassian.net",
+    "Email": "your-email@example.com",
+    "ApiToken": "YOUR_JIRA_API_TOKEN_HERE",
+    "ProjectKey": "ETR"
+  },
+  "Xray": {
+    "ClientId": "YOUR_XRAY_CLIENT_ID_HERE",
+    "ClientSecret": "YOUR_XRAY_CLIENT_SECRET_HERE"
+  }
+}

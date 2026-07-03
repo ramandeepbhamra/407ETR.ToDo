@@ -14,7 +14,25 @@
 
 ## Backend Setup
 
-### 1. Choose a Launch Profile
+### 1. Configure Development Settings (First Time Only)
+
+The project uses `appsettings.Development.json` for local configuration. This file is **gitignored** to protect secrets.
+
+**Setup steps:**
+```bash
+cd ETR.ToDo.Web.Host
+cp appsettings.Development.json.example appsettings.Development.json
+```
+
+Then edit `appsettings.Development.json` and add your credentials:
+- **Jira:** Get API token from https://id.atlassian.com/manage-profile/security/api-tokens
+- **Xray:** Get Client ID/Secret from Xray Cloud API settings
+
+> **Note:** If you don't need Jira/Xray integration, you can leave the placeholder values as-is. They're only required if you're working with test management features.
+
+For detailed setup instructions, see [docs/xray/setup-guide.md](../xray/setup-guide.md).
+
+### 2. Choose a Launch Profile
 
 | Profile | HTTP URL | HTTPS URL | Recommendation |
 |---|---|---|---|
@@ -29,7 +47,7 @@ To trust the dev certificate (HTTPS profiles only):
 dotnet dev-certs https --trust
 ```
 
-### 2. Run the API
+### 3. Run the API
 
 ```bash
 dotnet run --project ETR.ToDo.Web.Host
@@ -40,13 +58,13 @@ On first run, the app automatically:
 - Applies all EF Core migrations via `MigrateAsync()`
 - Seeds 40 test users (10 per role: Basic, Admin, Dev)
 
-### 3. Verify
+### 4. Verify
 
 - Swagger UI: `http://localhost:5214/swagger`
 - Scalar UI: `http://localhost:5214/scalar/v1`
 - Health check: `http://localhost:5214/health`
 
-### 3. Test Credentials
+### 5. Test Credentials
 
 Seed accounts for all four roles (Basic, Premium, Admin, Dev) are created automatically on first run. See the seeding logic in the project, or register a new Basic account directly via the app.
 
