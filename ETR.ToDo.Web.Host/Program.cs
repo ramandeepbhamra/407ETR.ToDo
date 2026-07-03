@@ -34,6 +34,8 @@ builder.Host.UseSerilog();
 // Configuration
 builder.Services.Configure<ApplicationSettings>(builder.Configuration.GetSection("Application"));
 builder.Services.Configure<SessionSettings>(builder.Configuration.GetSection("Session"));
+builder.Services.Configure<JiraSettings>(builder.Configuration.GetSection("Jira"));
+builder.Services.Configure<XraySettings>(builder.Configuration.GetSection("Xray"));
 
 // Add services to the container
 builder.Services.AddControllers();
